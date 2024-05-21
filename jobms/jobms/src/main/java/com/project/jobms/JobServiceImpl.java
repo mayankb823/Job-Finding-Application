@@ -20,6 +20,14 @@ public class JobServiceImpl implements JobService{
      @Autowired
     CompanyClient companyClient;
 
+     public JobDto jobMapper(Job job,Company company,List<Review> review){
+         JobDto jobDto=new JobDto();
+         jobDto.setJob(job);
+         jobDto.setCompany(company);
+         jobDto.setReview(review);
+         return jobDto;
+     }
+
     public JobDto convertToDto(Job job){
           Company company =companyClient.getCompany(job.getCompanyId());
         ResponseEntity<List<Review>> reviewResponse=restTemplate.exchange("http://REVIEW-SERVICE:8083/reviews?companyId="+job.getCompanyId(),
@@ -29,11 +37,7 @@ public class JobServiceImpl implements JobService{
                 }
         );
         List<Review> review=reviewResponse.getBody();
-        JobDto jobDto=new JobDto();
-        jobDto.setJob(job);
-        jobDto.setCompany(company);
-        jobDto.setReview(review);
-
+        JobDto jobDto= jobMapper(job,company,review);
         return jobDto;
     }
 
