@@ -22,6 +22,11 @@ public class ReviewServiceImpl implements ReviewService {
         return  reviewRepository.findById(reviewId);
     }
     @Override
+    public boolean deleteById(Long reviewId) {
+        reviewRepository.deleteById(reviewId);
+        return true;
+    }
+    @Override
     public Review save(Review review,Long companyId) {
            review.setCompanyId(companyId);
            return reviewRepository.save(review);

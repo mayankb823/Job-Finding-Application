@@ -8,6 +8,7 @@ public interface ReviewService {
      List<Review> findAll(Long companyId);
 
      Optional<Review> findById(Long reviewId);
+    boolean deleteById(Long reviewId);
 
     Review save(Review review,Long companyId);
 }

@@ -32,5 +32,10 @@ public class ReviewController {
         Review createdReview = reviewService.save(review,companyId);//Add Review
         return new ResponseEntity<>(createdReview, HttpStatus.CREATED);
     }
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Boolean> deleteReviewById(@PathVariable Long reviewId) {
+              reviewService.deleteById(reviewId);
+        return new ResponseEntity<>(true,HttpStatus.NO_CONTENT);
+    }
 
 }
