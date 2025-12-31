@@ -2,8 +2,7 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-COPY target/gateway-0.0.1-SNAPSHOT.jar.original docker build -t gateway .
- app.jar
+COPY target/gateway-0.0.1-SNAPSHOT.jar.original app.jar
 
 EXPOSE 8082
 

@@ -2,9 +2,7 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
-COPY target/service-reg-0.0.1-SNAPSHOT.jar.original
- docker build -t service-reg .
- app.jar
+COPY target/service-reg-0.0.1-SNAPSHOT.jar.original app.jar
 
 EXPOSE 8083
 
