@@ -2,6 +2,7 @@ package com.project.jobms;
 
 import com.project.jobms.dto.JobDto;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ public class JobController {
 
     @Autowired
     private JobService jobService;
+    @Autowired
+    private JobApplicationService service;
 
     @GetMapping
     @CircuitBreaker(name="CompanyandRatingBreaker",fallbackMethod = "comapanyRatingFallback")
@@ -38,7 +41,9 @@ public class JobController {
     public ResponseEntity<Job> getJobById(@PathVariable Long id) {
         Optional<Job> job = jobService.findById(id);
         return job.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
-                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Job not found with id: " + id)
+                );
     }
 
     @PostMapping
@@ -47,5 +52,22 @@ public class JobController {
         return new ResponseEntity<>(createdJob, HttpStatus.CREATED);
     }
 
+    @PostMapping("/apply/{jobId}")
+    public ResponseEntity<String> applyJob(@PathVariable Long jobId,
+                                           @RequestHeader(value = "X-User-Id", required = false) Long userId,
+                                           @RequestHeader(value = "X-User-Email", required = false) String email,
+                                           @RequestBody(required = false) JobApplyRequest request) {
+        System.out.println("USER ID = " + userId);
+        String resumeUrl = null;
 
+        if(request != null){
+            resumeUrl = request.getResumeUrl();
+        }
+        System.out.println("email = "+email);
+        if(email == null){
+            email="bmayank854@gmail.com";
+        }
+        System.out.println("email = "+email);
+        return ResponseEntity.ok(service.applyJob(jobId, userId,email,resumeUrl));
+    }
 }
