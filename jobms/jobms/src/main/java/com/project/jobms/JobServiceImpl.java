@@ -3,7 +3,10 @@ import com.project.jobms.config.CompanyClient;
 import com.project.jobms.dto.JobDto;
 import com.project.jobms.external.Company;
 import com.project.jobms.external.Review;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +45,7 @@ public class JobServiceImpl implements JobService{
     }
 
     @Override
+    @Cacheable(value = "job")
     public List<JobDto> findAll() {
         List<Job> jobs= jobRepository.findAll();
         List < JobDto > jobDtos = new ArrayList<>();
@@ -56,7 +60,9 @@ public class JobServiceImpl implements JobService{
         return jobRepository.findById(id);
     }
     @Override
+    @CacheEvict(value = "job", allEntries = true)
     public Job save(Job job) {
-        return jobRepository.save(job);
+
+         return jobRepository.save(job);
     }
 }
