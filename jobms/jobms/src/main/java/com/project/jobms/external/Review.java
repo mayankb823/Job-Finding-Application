@@ -3,9 +3,11 @@ package com.project.jobms.external;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @AllArgsConstructor
 @NoArgsConstructor
-public class Review {
+public class Review implements Serializable {
     private Long id;
     private String title;
     private String description;

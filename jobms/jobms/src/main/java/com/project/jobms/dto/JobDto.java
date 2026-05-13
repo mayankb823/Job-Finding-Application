@@ -6,11 +6,12 @@ import com.project.jobms.external.Review;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class JobDto {
+public class JobDto implements Serializable {
  private Job job;
  private Company company;
 

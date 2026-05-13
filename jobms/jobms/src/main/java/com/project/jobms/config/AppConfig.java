@@ -5,8 +5,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.Serializable;
+
 @Configuration
-public class AppConfig {
+public class AppConfig implements Serializable {
     @Bean
     @LoadBalanced
     public RestTemplate restTemplate(){
