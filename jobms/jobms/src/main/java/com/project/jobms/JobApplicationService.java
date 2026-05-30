@@ -19,24 +19,15 @@ public class JobApplicationService {
     @Autowired
     KafkaProducerService kafkaProducerService;
 
-    public String applyJob(Long jobId,
-                           Long userId,
-                           String email,
-                           String resumeUrl) {
+    public String applyJob(Long jobId, Long userId, String email, String resumeUrl) {
 
         // ✅ Check job exists
         Job job = jobRepository.findById(jobId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Job not found with id: " + jobId
-                        )
-                );
+                .orElseThrow(() -> new ResourceNotFoundException("Job not found with id: " + jobId));
 
         // ✅ Prevent duplicate apply
         if (repository.existsByJobIdAndUserId(jobId, userId)) {
-            throw new RuntimeException(
-                    "You already applied for this job"
-            );
+            throw new RuntimeException("You already applied for this job");
         }
 
         // ✅ Save application

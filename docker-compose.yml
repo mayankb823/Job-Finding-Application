@@ -1,0 +1,155 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+    ports:
+      - "2181:2181"
+
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+
+    depends_on:
+      - zookeeper
+
+    ports:
+      - "9092:9092"
+
+    environment:
+
+      KAFKA_BROKER_ID: 1
+
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP:
+        PLAINTEXT:PLAINTEXT
+
+      KAFKA_ADVERTISED_LISTENERS:
+        PLAINTEXT://kafka:9092
+
+      KAFKA_LISTENERS:
+        PLAINTEXT://0.0.0.0:9092
+
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+
+
+  eureka:
+    build:
+      context: ./service-reg/service-reg
+    ports:
+      - "8761:8761"
+
+
+  auth-service:
+    build:
+      context: ./userAuthService/userAuthService
+
+    ports:
+      - "8087:8087"
+
+    environment:
+      JWT_SECRET: mysecretkey123
+
+    depends_on:
+      - mysql
+      - eureka
+
+
+  company-service:
+    build:
+      context: ./companyms/companyms
+
+    ports:
+      - "8082:8082"
+
+    depends_on:
+      - mysql
+      - eureka
+
+
+  review-service:
+    build:
+      context: ./reviewms/reviewms
+
+    ports:
+      - "8083:8083"
+
+    depends_on:
+      - mysql
+      - eureka
+
+
+  job-service:
+    build:
+      context: ./jobms/jobms
+
+    ports:
+      - "8081:8081"
+
+    depends_on:
+      - mysql
+      - kafka
+      - redis
+      - eureka
+
+
+  notification-service:
+    build:
+      context: ./notificationms/notificationms
+
+    ports:
+      - "8089:8089"
+
+    environment:
+      MAIL_USERNAME: mayankbhatt087@gmail.com
+      MAIL_PASSWORD: uktchieqhwvhvyrx
+
+    depends_on:
+      - kafka
+
+
+  gateway:
+    build:
+      context: ./gateway/gateway
+
+    ports:
+      - "8085:8085"
+
+    depends_on:
+      - eureka
+      - auth-service
+      - company-service
+      - review-service
+      - job-service
+
+
+volumes:
+  mysql-data:
